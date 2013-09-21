@@ -25,6 +25,8 @@ public class Converter {
 		msgdat = new HashMap<String, String[]>();
 		
 		msgdat.put("0060", new String[] {"Front Hub", "4", "Sus Pot FR", "0.012207", "mm", "Sus Pot FL", "0.012207", "mm"});
+		msgdat.put("0070", new String[] {"Accelerometer", "8", "Yaw Rate", "0.005", "deg/sec", "Reserved", "1", "N/A", "Accel Y Axis", ".0001274", "g", "Unused", "1", "N/A"});
+		msgdat.put("0080", new String[] {"Accelerometer", "8", "Yaw Accel", "0.0125", "deg/sec^2", "Reserved", "1", "N/A", "Accel X Axis", ".0001274", "g", "Unused", "1", "N/A"});
 	}
 	
 	public void setInputFile(File file) {
@@ -53,7 +55,7 @@ public class Converter {
 			e.printStackTrace();
 		}
 		
-		for(int i=0; i<1; i++) {
+		for(int i=0; i<100; i++) {
 			String msgId = hex(data[i+1]) + hex(data[i]);
 			System.out.println(msgId);
 			if(msgdat.containsKey(msgId)) {
@@ -79,7 +81,13 @@ public class Converter {
 				}
 				
 				if(Integer.parseInt(msgdat.get(msgId)[1]) == 8) { 
-					
+					System.out.println(data[i+2] + " " + data[i+3]);
+					printString = msgdat.get(msgId)[0] + " - " 
+						+ msgdat.get(msgId)[2] + ": " + (Integer.parseInt(hex(data[i+2]) + hex(data[i+3]), 16) * Double.parseDouble(msgdat.get(msgId)[3])) + msgdat.get(msgId)[4] + " " 
+						+ msgdat.get(msgId)[5] + ": " + (Integer.parseInt(hex(data[i+4]) + hex(data[i+5]), 16) * Double.parseDouble(msgdat.get(msgId)[6])) + msgdat.get(msgId)[7]
+						+ msgdat.get(msgId)[8] + ": " + (Integer.parseInt(hex(data[i+6]) + hex(data[i+7]), 16) * Double.parseDouble(msgdat.get(msgId)[9])) + msgdat.get(msgId)[10] + " " 
+						+ msgdat.get(msgId)[11] + ": " + (Integer.parseInt(hex(data[i+8]) + hex(data[i+9]), 16) * Double.parseDouble(msgdat.get(msgId)[12])) + msgdat.get(msgId)[13];
+					i = i + 14;
 				}
 				
 				System.out.println(printString);
@@ -87,6 +95,7 @@ public class Converter {
 			} 
 			else {
 				System.out.println("Message Code Not Found");
+				return;
 			}
 		}	
 	}
