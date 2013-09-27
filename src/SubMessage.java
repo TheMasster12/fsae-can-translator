@@ -12,9 +12,10 @@ public class SubMessage {
 	}
 	
 	public String translateData(byte one, byte two) {
-		String printString = null;
+		String printString = "";
+		if(title.equals("Unused") || title.equals("Reserved")) return printString;
 		if(isSigned || !isSigned) {
-			printString = " " + title + ": " + (Integer.parseInt(hex(one) + hex(two), 16) * scalar) + units;
+			printString = title + "," + (Integer.parseInt(hex(one) + hex(two), 16) * scalar) + "\n";
 		}
 		return printString;
 	}
