@@ -2,13 +2,11 @@
 public class MessageType {
 	private String messageId;
 	private int messageLength;
-	private String messageOrigin;
 	private SubMessage[] messageData;
 	
-	public MessageType(String id, int length, String origin, SubMessage[] data) {
+	public MessageType(String id, int length, SubMessage[] data) {
 		this.messageId = id;
 		this.messageLength = length;
-		this.messageOrigin = origin;
 		this.messageData = data;
 	}
 	
