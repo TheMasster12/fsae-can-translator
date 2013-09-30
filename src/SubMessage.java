@@ -14,7 +14,7 @@ public class SubMessage {
 		//this.units = units;
 	}
 	
-	public String translateData(byte one, byte two) {
+	public String translateData(byte one, byte two, float timestamp) {
 		String printString = "";
 		if(title.equals("Unused") || title.equals("Reserved")) return printString;
 		
@@ -29,10 +29,10 @@ public class SubMessage {
 		if(title.equals("Brake Pressure 1")) hexValue -= 409.6;
 		
 		if(isSigned) {
-			printString = title + "," + round((((short)hexValue) * scalar)) + "\n";
+			printString = title + "," + round((((short)hexValue) * scalar)) + "," + timestamp + "\n";
 		}
 		else {
-			printString = title + "," + round((hexValue * scalar)) + "\n";
+			printString = title + "," + round((hexValue * scalar)) + "," + timestamp + "\n";
 		}
 		return printString;
 	}

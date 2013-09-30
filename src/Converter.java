@@ -74,21 +74,28 @@ public class Converter {
 			
 			int i=0;
 			while(true) {
-				if(i>= data.length) break;
-				String msgId = hex(data[i+1]) + hex(data[i]);
-				if(msgdat.containsKey(msgId)) {
-					String printString = "";
-					byte[] msgBytes = new byte[msgdat.get(msgId).getLength()];
-					for(int j=0; j<msgdat.get(msgId).getLength();j++) {
-						msgBytes[j] = data[j+i+2];
+				try {
+					if(i>= data.length) break;
+					String msgId = hex(data[i+1]) + hex(data[i]);
+					if(msgdat.containsKey(msgId)) {
+						String printString = "";
+						int len = msgdat.get(msgId).getLength();
+						byte[] msgBytes = new byte[len];
+						byte[] timeBytes = new byte[] {data[i + len + 2], data[i + len + 3], data[i + len + 4], data[i + len + 5]};
+						for(int j=0; j<len;j++) {
+							msgBytes[j] = data[j+i+2];
+						}
+						
+						printString += msgdat.get(msgId).translateData(msgBytes, timeBytes);
+						bw.write(printString);
+						
+						i = i + len + 6;	
+					} 
+					else {
+						bw.write("Error: Message Code Not Found - " + msgId);
+						break;
 					}
-					printString += msgdat.get(msgId).translateData(msgBytes);
-					i = i + msgdat.get(msgId).getLength() + 6;
-	
-					bw.write(printString);
-				} 
-				else {
-					bw.write("Error: Message Code Not Found - " + msgId);
+				} catch(ArrayIndexOutOfBoundsException e) {
 					break;
 				}
 			}
