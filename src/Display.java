@@ -61,7 +61,7 @@ public class Display extends JFrame {
 		convertButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				converter.convert();
+				converter.begin();
 			}
 		});
 		mainPanel.add(convertButton);

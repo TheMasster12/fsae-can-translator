@@ -38,8 +38,8 @@ public class SubMessage {
 		return printString;
 	}
 	
-	public String getValue(byte one, byte two) {
-		if(title.equals("Unused") || title.equals("Reserved")) return "x";
+	public float getValue(byte one, byte two) {
+		if(title.equals("Unused") || title.equals("Reserved")) return 0.0f;
 		
 		String hexString = isBigEndian ? hex(one) + hex(two) : hex(two) + hex(one);
 		int hexValue = Integer.parseInt(hexString,16);
@@ -52,10 +52,10 @@ public class SubMessage {
 		if(title.equals("Brake Pressure 1")) hexValue -= 409.6;
 		
 		if(isSigned) {
-			return "" + round((((short)hexValue) * scalar));
+			return (float) round((((short)hexValue) * scalar));
 		}
 		else {
-			return "" + round((hexValue * scalar));
+			return (float) round((hexValue * scalar));
 		}
 	}
 	

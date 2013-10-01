@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +15,8 @@ public class Converter {
 	private File outputFile;
 	private Map<String, MessageType> msgdat;
 	private int progress;
+	private ArrayList<float[]> values;
+	private ArrayList<String> axis;
 	
 	public Converter() {
 		//display = new Display(this);
@@ -26,8 +29,12 @@ public class Converter {
 	public void begin() {
 		this.progress = 0;
 		long time = System.currentTimeMillis();
-		printAxis();
+		
+		this.axis = prepareAxis();
 		convert();
+		normalize();
+		outputValues();
+		
 		System.out.println("Time Elapsed " + (System.currentTimeMillis() - time) / 1000.0 + "s");
 	}
 	
@@ -45,9 +52,11 @@ public class Converter {
 		msgdat.put("0203", new MessageType("0203", 2, new SubMessage[] {new SubMessage("Ground Speed", true, true, 0.1f, "MPH"), new SubMessage("Unused", true, true, 0.1f, "")}));
 	}
 	
-	public void printAxis() {
+	private ArrayList<String> prepareAxis() {
+		ArrayList<String> axis = new ArrayList<String>();
+		
 		int c = -1;
-		String printString = "Time [s] ";
+		axis.add("Time [s] ");
 		Iterator<Entry<String, MessageType>> it = msgdat.entrySet().iterator();
 		while(it.hasNext()) {
 			Entry<String, MessageType> message = it.next();
@@ -56,14 +65,14 @@ public class Converter {
 				if(!(messages[i].getTitle().equals("Reserved") || messages[i].getTitle().equals("Unused"))) {
 					c++;
 					message.getValue().getSubMessages()[i].setColumnIndex(c);
-					printString += messages[i].getColumnIndex() + " " + messages[i].getTitle() + " [" + messages[i].getUnits() + "] ";
+					axis.add(messages[i].getTitle() + " [" + messages[i].getUnits() + "] ");
 				}
 			}
 		}
-		System.out.println(printString);
+		return axis;
 	}
 	
-	public void convert() {
+	private void convert() {
 		if(inputFile == null || !inputFile.canRead() || !inputFile.exists() || inputFile.isDirectory() || !inputFile.isFile()) {
 			//JOptionPane.showConfirmDialog(progressBar.getParent(), "Please choose a valid input file.", "Invalid File Error", JOptionPane.ERROR_MESSAGE);
 			System.out.println("Invalid File. Please choose another.");
@@ -79,42 +88,68 @@ public class Converter {
 			return;
 		}
 		
+		this.values = new ArrayList<float[]>();
+			
+		int i=0;
+		while(true) {
+			try {
+				if(i >= data.length) break;
+				
+				int temp = (int)(Math.floor(((i / (float)data.length) * 100.0f)));
+				if(temp > progress) setProgress(temp);
+				
+				String msgId = hex(data[i+1]) + hex(data[i]);
+				if(msgdat.containsKey(msgId)) {
+					int len = msgdat.get(msgId).getLength();
+					byte[] msgBytes = new byte[len];
+					byte[] timeBytes = new byte[] {data[i + len + 2], data[i + len + 3], data[i + len + 4], data[i + len + 5]};
+					for(int j=0; j<len;j++) {
+						msgBytes[j] = data[j+i+2];
+					}
+					
+					values.add(msgdat.get(msgId).translateData(msgBytes, timeBytes, this.axis.size()));						
+					i = i + len + 6;
+				} 
+				else {
+					System.out.println("Error: Message Code Not Found - " + msgId);
+					break;
+				}
+			} catch(ArrayIndexOutOfBoundsException e) {
+				break;
+			}
+		}
+	}
+	
+	private void normalize() {
+		for(int i=1;i<values.get(0).length;i++) {
+			for(int j=0;j<values.size();j++) {
+				if(values.get(j)[i] != Float.MAX_VALUE) {
+					for(int k=0;k<j;k++) {
+						values.get(k)[i] = values.get(j)[i];
+					}
+					break;
+				}
+			}
+		}
+	}
+	
+	public void outputValues() {
 		try {
 			FileWriter fw = new FileWriter(outputFile.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			
-			int i=0;
-			while(true) {
-				try {
-					if(i >= data.length) break;
-					
-					int temp = (int)(Math.floor(((i / (float)data.length) * 100.0f)));
-					if(temp > progress) setProgress(temp);
-					
-					String msgId = hex(data[i+1]) + hex(data[i]);
-					if(msgdat.containsKey(msgId)) {
-						String printString = "";
-						int len = msgdat.get(msgId).getLength();
-						
-						byte[] msgBytes = new byte[len];
-						byte[] timeBytes = new byte[] {data[i + len + 2], data[i + len + 3], data[i + len + 4], data[i + len + 5]};
-						for(int j=0; j<len;j++) {
-							msgBytes[j] = data[j+i+2];
-						}
-						
-						printString += msgdat.get(msgId).translateData(msgBytes, timeBytes);
-						bw.write(printString);
-						
-						i = i + len + 6;
-					} 
-					else {
-						bw.write("Error: Message Code Not Found - " + msgId);
-						break;
-					}
-				} catch(ArrayIndexOutOfBoundsException e) {
-					break;
-				}
+			for(String e: axis) {
+				bw.write(e + " ");
 			}
+			bw.write("\n");
+			
+			for(float[] e: values) {
+				for(int i=0;i<e.length;i++) {
+					bw.write(e[i] + " ");
+				}
+				bw.write("\n");
+			}
+			
 			bw.close();
 			fw.close();
 		} catch (IOException e) {
@@ -132,12 +167,12 @@ public class Converter {
 		this.outputFile = file;
 	}
 	
-	public String hex(byte num) {
+	private String hex(byte num) {
 		return String.format("%02x", num);
 	}
 	
-	public void setProgress(int progress) {
+	private void setProgress(int progress) {
 		this.progress = progress;
-		System.out.println("Progress: " + progress + "%");
+		System.out.println("Conversion Progress: " + progress + "%");
 	}
 }

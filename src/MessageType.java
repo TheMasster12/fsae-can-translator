@@ -10,21 +10,19 @@ public class MessageType {
 		this.messageData = data;
 	}
 	
-	public String translateData(byte[] data, byte[] time) {
+	public float[] translateData(byte[] data, byte[] time, int numColumns) {
 		float timestamp = (Integer.parseInt(hex(time[3]) + hex(time[2]),16) * 1.0f) + ((Integer.parseInt(hex(time[0]) + hex(time[1]),16) * 1.0f) / 32768.0f) - 1.0f;
-		
-		String printString = timestamp + " ";
-		for(int i=0;i<messageData[0].getColumnIndex();i++) {
-			printString += "x ";
+
+		float[] values = new float[numColumns];
+		for(int i=0;i<values.length;i++) {
+			values[i] = Float.MAX_VALUE;
 		}
+		values[0] = timestamp;
 		
 		for(int i=0;i<messageLength/2;i++) {
-			for(int j=messageData[i].getColumnIndex();j<messageData[i].getColumnIndex();j++) {
-				printString += "x ";
-			}
-			printString += timestamp + " " + messageData[i].getValue(data[2*i], data[(2*i)+1]) + "\n";
+			values[messageData[i].getColumnIndex()] = messageData[i].getValue(data[2*i], data[(2*i)+1]);
 		}
-		return printString;
+		return values;
 	}
 	
 	public int getLength() {
