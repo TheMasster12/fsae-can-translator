@@ -124,6 +124,7 @@ public class Converter {
 				break;
 			}
 		}
+		setProgress(0, 100);
 	}
 	
 	private void normalize() {
@@ -137,20 +138,22 @@ public class Converter {
 				}
 			}
 		}
-		
-		for(int i=0;i<values.get(0).length;i++) {
-			for(int m=0;m<values.size();m++) {
-				if(values.get(m)[i] == Float.MAX_VALUE) {
-					for(int n=m;n>=0;n--) {
-						if(values.get(n)[i] != Float.MAX_VALUE) {
-							values.get(m)[i] = values.get(n)[i];
+				
+		for(int i=0;i<values.size();i++) {
+			for(int m=0;m<values.get(i).length;m++) {
+				if(values.get(i)[m] == Float.MAX_VALUE) {
+					for(int n=i;n>=0;n--) {
+						if(values.get(n)[m] != Float.MAX_VALUE) {
+							values.get(i)[m] = values.get(n)[m];
 							break;
 						}
 					}
 				}
 			}
+			int temp = (int)(Math.floor(((i / (float)values.size()) * 100.0f)));
+			if(temp > this.normalizeProgress) setProgress(1, temp);
 		}
-		
+				
 		for(int i=0;i<values.get(0).length;i++) {
 			for(int j=0;j<values.size();j++) {
 				if(values.get(j)[i] == Float.MAX_VALUE) {
@@ -158,6 +161,7 @@ public class Converter {
 				}
 			}
 		}
+		setProgress(1, 100);
 	}
 	
 	public void outputValues() {
@@ -180,6 +184,7 @@ public class Converter {
 				
 				bw.write("\n");
 			}
+			setProgress(2, 100);
 			
 			bw.close();
 			fw.close();
