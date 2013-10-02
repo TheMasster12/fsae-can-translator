@@ -11,7 +11,7 @@ public class MessageType {
 	}
 	
 	public float[] translateData(byte[] data, byte[] time, int numColumns) {
-		float timestamp = (Integer.parseInt(hex(time[3]) + hex(time[2]),16) * 1.0f) + ((Integer.parseInt(hex(time[0]) + hex(time[1]),16) * 1.0f) / 32768.0f) - 1.0f;
+		float timestamp = ((Integer.parseInt(hex(time[3]) + hex(time[2]),16) * 1.0f) + (((Integer.parseInt(hex(time[1]) + hex(time[0]),16) * 1.0f) / 32768.0f)) - 1.0f);
 
 		float[] values = new float[numColumns];
 		for(int i=0;i<values.length;i++) {
@@ -20,7 +20,9 @@ public class MessageType {
 		values[0] = timestamp;
 		
 		for(int i=0;i<messageLength/2;i++) {
-			values[messageData[i].getColumnIndex()] = messageData[i].getValue(data[2*i], data[(2*i)+1]);
+			if(!(messageData[i].getTitle().equals("Reserved") || messageData[i].getTitle().equals("Unused"))) {
+				values[messageData[i].getColumnIndex()] = messageData[i].getValue(data[2*i], data[(2*i)+1]);
+			}
 		}
 		return values;
 	}

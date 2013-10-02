@@ -3,7 +3,7 @@ public class SubMessage {
 	private String title;
 	private boolean isSigned;
 	private boolean isBigEndian;
-	private double scalar;
+	private float scalar;
 	private String units;
 	private int columnIndex;
 
@@ -15,10 +15,7 @@ public class SubMessage {
 		this.units = units;
 	}
 	
-	public String translateData(byte one, byte two, float timestamp) {
-		String printString = "";
-		if(title.equals("Unused") || title.equals("Reserved")) return printString;
-		
+	public float getValue(byte one, byte two) {		
 		String hexString = isBigEndian ? hex(one) + hex(two) : hex(two) + hex(one);
 		int hexValue = Integer.parseInt(hexString,16);
 		
@@ -30,32 +27,10 @@ public class SubMessage {
 		if(title.equals("Brake Pressure 1")) hexValue -= 409.6;
 		
 		if(isSigned) {
-			printString = title + "," + round((((short)hexValue) * scalar)) + "," + timestamp + "\n";
+			return (((short)hexValue) * scalar);
 		}
 		else {
-			printString = title + "," + round((hexValue * scalar)) + "," + timestamp + "\n";
-		}
-		return printString;
-	}
-	
-	public float getValue(byte one, byte two) {
-		if(title.equals("Unused") || title.equals("Reserved")) return 0.0f;
-		
-		String hexString = isBigEndian ? hex(one) + hex(two) : hex(two) + hex(one);
-		int hexValue = Integer.parseInt(hexString,16);
-		
-		if(title.equals("Yaw Rate")) hexValue -= 0x8000;
-		if(title.equals("Yaw Acceleration")) hexValue -= 0x8000;
-		if(title.equals("Lateral Acceleration")) hexValue -= 0x8000;
-		if(title.equals("Longitudinal Acceleration")) hexValue -= 0x8000;
-		if(title.equals("Brake Pressure 0")) hexValue -= 409.6;
-		if(title.equals("Brake Pressure 1")) hexValue -= 409.6;
-		
-		if(isSigned) {
-			return (float) round((((short)hexValue) * scalar));
-		}
-		else {
-			return (float) round((hexValue * scalar));
+			return (hexValue * scalar);
 		}
 	}
 	
@@ -69,20 +44,6 @@ public class SubMessage {
 	
 	public String hex(byte num) {
 		return String.format("%02x", num);
-	}
-	
-	public double round(double num) {
-		final int SIG_FIGS = 6;
-	    if(num == 0) {
-	        return 0;
-	    }
-
-	    final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
-	    final int power = SIG_FIGS - (int) d;
-
-	    final double magnitude = Math.pow(10, power);
-	    final long shifted = Math.round(num*magnitude);
-	    return shifted/magnitude;
 	}
 	
 	public String getTitle() {

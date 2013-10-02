@@ -13,24 +13,31 @@ public class Converter {
 	//private Display display;
 	private File inputFile;
 	private File outputFile;
+	
 	private Map<String, MessageType> msgdat;
-	private int progress;
 	private ArrayList<float[]> values;
 	private ArrayList<String> axis;
+	
+	private int convertProgress;
+	private int normalizeProgress;
+	private int printProgress;
 	
 	public Converter() {
 		//display = new Display(this);
 		//display.setVisible(true);
 		initMessageInfo();
-		setInputFile(new File(new File("").getAbsolutePath() + "/sample-data/1000.data"));
-		setOutputFile(new File(new File("").getAbsolutePath() + "/sample-data/1000.out"));
+		setInputFile(new File(new File("").getAbsolutePath() + "/sample-data/500.data"));
+		setOutputFile(new File(new File("").getAbsolutePath() + "/sample-data/500.out"));
 	}
 	
 	public void begin() {
-		this.progress = 0;
-		long time = System.currentTimeMillis();
+		this.convertProgress = 0;
+		this.normalizeProgress = 0;
+		this.printProgress = 0;
 		
+		long time = System.currentTimeMillis();
 		this.axis = prepareAxis();
+		
 		convert();
 		normalize();
 		outputValues();
@@ -55,7 +62,7 @@ public class Converter {
 	private ArrayList<String> prepareAxis() {
 		ArrayList<String> axis = new ArrayList<String>();
 		
-		int c = -1;
+		int c = 0;
 		axis.add("Time [s] ");
 		Iterator<Entry<String, MessageType>> it = msgdat.entrySet().iterator();
 		while(it.hasNext()) {
@@ -65,7 +72,7 @@ public class Converter {
 				if(!(messages[i].getTitle().equals("Reserved") || messages[i].getTitle().equals("Unused"))) {
 					c++;
 					message.getValue().getSubMessages()[i].setColumnIndex(c);
-					axis.add(messages[i].getTitle() + " [" + messages[i].getUnits() + "] ");
+					axis.add(c + " " + messages[i].getTitle() + " [" + messages[i].getUnits() + "] ");
 				}
 			}
 		}
@@ -96,7 +103,7 @@ public class Converter {
 				if(i >= data.length) break;
 				
 				int temp = (int)(Math.floor(((i / (float)data.length) * 100.0f)));
-				if(temp > progress) setProgress(temp);
+				if(temp > this.convertProgress) setProgress(0,temp);
 				
 				String msgId = hex(data[i+1]) + hex(data[i]);
 				if(msgdat.containsKey(msgId)) {
@@ -106,7 +113,6 @@ public class Converter {
 					for(int j=0; j<len;j++) {
 						msgBytes[j] = data[j+i+2];
 					}
-					
 					values.add(msgdat.get(msgId).translateData(msgBytes, timeBytes, this.axis.size()));						
 					i = i + len + 6;
 				} 
@@ -131,6 +137,27 @@ public class Converter {
 				}
 			}
 		}
+		
+		for(int i=0;i<values.get(0).length;i++) {
+			for(int m=0;m<values.size();m++) {
+				if(values.get(m)[i] == Float.MAX_VALUE) {
+					for(int n=m;n>=0;n--) {
+						if(values.get(n)[i] != Float.MAX_VALUE) {
+							values.get(m)[i] = values.get(n)[i];
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		for(int i=0;i<values.get(0).length;i++) {
+			for(int j=0;j<values.size();j++) {
+				if(values.get(j)[i] == Float.MAX_VALUE) {
+					values.get(j)[i] = 0.0f;
+				}
+			}
+		}
 	}
 	
 	public void outputValues() {
@@ -143,10 +170,14 @@ public class Converter {
 			}
 			bw.write("\n");
 			
-			for(float[] e: values) {
-				for(int i=0;i<e.length;i++) {
-					bw.write(e[i] + " ");
+			for(int i=0;i<values.size();i++) {
+				for(int j=0;j<values.get(i).length;j++) {
+					bw.write(round(values.get(i)[j]) + " ");
 				}
+				
+				int temp = (int)(Math.floor(((i / (float)values.size()) * 100.0f)));
+				if(temp > this.printProgress) setProgress(2, temp);
+				
 				bw.write("\n");
 			}
 			
@@ -167,12 +198,38 @@ public class Converter {
 		this.outputFile = file;
 	}
 	
+	public String round(double num) {
+		final int SIG_FIGS = 6;
+	    if(num == 0) {
+	        return "0.0";
+	    }
+
+	    final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
+	    final int power = SIG_FIGS - (int) d;
+
+	    final double magnitude = Math.pow(10, power);
+	    final long shifted = Math.round(num*magnitude);
+	    return "" + shifted/magnitude;
+	}
+	
 	private String hex(byte num) {
 		return String.format("%02x", num);
 	}
 	
-	private void setProgress(int progress) {
-		this.progress = progress;
-		System.out.println("Conversion Progress: " + progress + "%");
+	private void setProgress(int which, int progress) {
+		switch(which) {
+			case 0:
+				this.convertProgress = progress;
+				System.out.println("Conversion Progress: " + progress + "%");
+				return;
+			case 1:
+				this.normalizeProgress = progress;
+				System.out.println("Normalization Progress: " + progress + "%");
+				return;
+			case 2:
+				this.printProgress = progress;
+				System.out.println("Output Progress: " + progress + "%");
+				return;
+		}
 	}
 }
