@@ -72,7 +72,7 @@ public class Converter {
 				if(!(messages[i].getTitle().equals("Reserved") || messages[i].getTitle().equals("Unused"))) {
 					c++;
 					message.getValue().getSubMessages()[i].setColumnIndex(c);
-					axis.add(c + " " + messages[i].getTitle() + " [" + messages[i].getUnits() + "] ");
+					axis.add(messages[i].getTitle() + " [" + messages[i].getUnits() + "] ");
 				}
 			}
 		}
