@@ -108,7 +108,7 @@ public class Converter {
 				if(i >= data.length) break;
 				
 				int temp = (int)(Math.floor(((i / (float)data.length) * 100.0f)));
-				if(temp > this.convertProgress) display.setProgress(0,temp);
+				if(temp > this.convertProgress) setProgress(0,temp);
 				
 				String msgId = hex(data[i+1]) + hex(data[i]);
 				if(msgdat.containsKey(msgId)) {
@@ -129,7 +129,7 @@ public class Converter {
 				break;
 			}
 		}
-		display.setProgress(0, 100);
+		setProgress(0, 100);
 		return true;
 	}
 	
@@ -154,7 +154,7 @@ public class Converter {
 				j++;
 			}
 			int temp = (int)(Math.floor(((i / (float)values.get(0).length) * 100.0f)));
-			if(temp > this.normalizeProgress) display.setProgress(1, temp);
+			if(temp > this.normalizeProgress) setProgress(1, temp);
 		}
 				
 		for(int i=0;i<values.get(0).length;i++) {
@@ -164,7 +164,7 @@ public class Converter {
 				}
 			}
 		}
-		display.setProgress(1, 100);
+		setProgress(1, 100);
 	}
 	
 	public void outputValues() {
@@ -183,11 +183,11 @@ public class Converter {
 				}
 				
 				int temp = (int)(Math.floor(((i / (float)values.size()) * 100.0f)));
-				if(temp > this.printProgress) display.setProgress(2, temp);
+				if(temp > this.printProgress) setProgress(2, temp);
 				
 				bw.write("\n");
 			}
-			display.setProgress(2, 100);
+			setProgress(2, 100);
 			
 			bw.flush();
 			fw.flush();
