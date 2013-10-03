@@ -1,5 +1,7 @@
 fsae-data-converter
 ===================
 
-*.data: Raw byte files to be decoded.
-*.stock: The 'correct' output from the old translator.
+Java program that takes raw output data from a CAN bus and outputs it in a format that can be imported by WinDarab
+
+ - sample-data/*.data - Raw byte files to be decoded.
+ - sample-data/*.stock - The 'correct' output from the old translator.
