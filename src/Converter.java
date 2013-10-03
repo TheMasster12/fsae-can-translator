@@ -137,20 +137,17 @@ public class Converter {
 					break;
 				}
 			}
-		}
-				
-		for(int i=0;i<values.size();i++) {
-			for(int m=0;m<values.get(i).length;m++) {
-				if(values.get(i)[m] == Float.MAX_VALUE) {
-					for(int n=i;n>=0;n--) {
-						if(values.get(n)[m] != Float.MAX_VALUE) {
-							values.get(i)[m] = values.get(n)[m];
-							break;
-						}
-					}
-				}
+		}			
+		
+		for(int i=1;i<values.get(0).length;i++) {
+			int j=0;
+			float val = values.get(0)[i];
+			while(j < values.size()) {
+				if(values.get(j)[i] == Float.MAX_VALUE) values.get(j)[i] = val;					 
+				else val = values.get(j)[i];
+				j++;
 			}
-			int temp = (int)(Math.floor(((i / (float)values.size()) * 100.0f)));
+			int temp = (int)(Math.floor(((i / (float)values.get(0).length) * 100.0f)));
 			if(temp > this.normalizeProgress) setProgress(1, temp);
 		}
 				
@@ -167,7 +164,7 @@ public class Converter {
 	public void outputValues() {
 		try {
 			FileWriter fw = new FileWriter(outputFile.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
+			BufferedWriter bw = new BufferedWriter(fw, 32768);
 			
 			for(String e: axis) {
 				bw.write(e + " ");
@@ -186,6 +183,8 @@ public class Converter {
 			}
 			setProgress(2, 100);
 			
+			bw.flush();
+			fw.flush();
 			bw.close();
 			fw.close();
 		} catch (IOException e) {
