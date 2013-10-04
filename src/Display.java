@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -31,10 +33,21 @@ public class Display extends JFrame {
 		this.converter = parent;
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		mainPanel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.gridheight = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
 				
-		inputTextField = new JLabel(new File("").getAbsolutePath());
-		//inputTextWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPanel.add(inputTextField);
+		inputTextField = new JLabel("Input File: " + new File("").getAbsolutePath());
+		mainPanel.add(inputTextField, c);
+		
+		outputTextField = new JLabel("Output File: " + new File("").getAbsolutePath());
+		c.gridy = 1;
+		mainPanel.add(outputTextField, c);
 		
 		JButton inputButton = new JButton("Select File to Convert");
 		inputButton.addActionListener(new ActionListener() {
@@ -43,35 +56,41 @@ public class Display extends JFrame {
 				showInputChooser();
 			}
 		});
-		//inputButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPanel.add(inputButton);
+		c.gridwidth = 1;
+		c.gridy = 2;
+		c.weightx = 1;
+		mainPanel.add(inputButton, c);
 		
-		outputTextField = new JLabel(new File("").getAbsolutePath());
-		mainPanel.add(outputTextField);
-		
-		JButton outputButton = new JButton("Select Output File");
+		JButton outputButton = new JButton("Select File to Output");
 		outputButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showOutputChooser();
 			}
 		});
-		mainPanel.add(outputButton);
+		c.gridy = 2;
+		c.gridx = 1;
+		mainPanel.add(outputButton, c);
 		
 		convertProgressBar = new JProgressBar();
 		convertProgressBar.setBackground(Color.red);
 		convertProgressBar.setForeground(Color.green);
-		mainPanel.add(convertProgressBar);
+		c.gridwidth = 2;
+		c.gridx = 0;
+		c.gridy = 3;
+		mainPanel.add(convertProgressBar, c);
 		
 		normalizeProgressBar = new JProgressBar();
 		normalizeProgressBar.setBackground(Color.red);
 		normalizeProgressBar.setForeground(Color.green);
-		mainPanel.add(normalizeProgressBar);
+		c.gridy = 4;
+		mainPanel.add(normalizeProgressBar, c);
 		
 		outputProgressBar = new JProgressBar();
 		outputProgressBar.setBackground(Color.red);
 		outputProgressBar.setForeground(Color.green);
-		mainPanel.add(outputProgressBar);
+		c.gridy = 5;
+		mainPanel.add(outputProgressBar, c);
 		
 		JButton convertButton = new JButton("Convert Selected File");
 		convertButton.addActionListener(new ActionListener() {
@@ -81,17 +100,19 @@ public class Display extends JFrame {
 				new RunThread().start();
 			}
 		});
-		mainPanel.add(convertButton);
+		c.gridy = 6;
+		mainPanel.add(convertButton, c);
 		
 		timeElapsedField = new JLabel();
-		mainPanel.add(timeElapsedField);
+		c.gridy = 7;
+		mainPanel.add(timeElapsedField, c);
 		
 		Container container = getContentPane();
 		container.add(mainPanel);
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(600,300);
-		this.setTitle("FSAE Data Converter - Andrew Mass");
+		this.setSize(750, 170);
+		this.setTitle("FSAE CAN Translator - Andrew Mass");
 	}
 	
 	private void resetDisplay() {
@@ -107,7 +128,7 @@ public class Display extends JFrame {
 		
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
-			inputTextField.setText(file.getAbsolutePath());
+			inputTextField.setText("Input File: " + file.getAbsolutePath());
 			converter.setInputFile(fileChooser.getSelectedFile());
 		}
 	}
@@ -118,7 +139,7 @@ public class Display extends JFrame {
 		
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
-			outputTextField.setText(file.getAbsolutePath());
+			outputTextField.setText("Output File: " + file.getAbsolutePath());
 			converter.setOutputFile(fileChooser.getSelectedFile());
 		}
 	}
@@ -127,7 +148,6 @@ public class Display extends JFrame {
 		switch(which) {
 			case 0:
 				convertProgressBar.setValue(progress);
-				mainPanel.invalidate();
 				return;
 			case 1:
 				normalizeProgressBar.setValue(progress);
