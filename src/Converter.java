@@ -1,5 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 public class Converter {
@@ -14,7 +16,7 @@ public class Converter {
 	private File inputFile;
 	private File outputFile;
 	
-	private Map<String, MessageType> msgdat;
+	private Map<String, MessageType> messageData;
 	private ArrayList<float[]> values;
 	private ArrayList<String> axis;
 	
@@ -25,7 +27,7 @@ public class Converter {
 	public Converter() {
 		display = new Display(this);
 		display.setVisible(true);
-		initMessageInfo();
+		if(!initMessageInfo()) System.exit(0);
 	}
 	
 	public void begin() {
@@ -44,18 +46,39 @@ public class Converter {
 		display.showTimeElapsed((System.currentTimeMillis() - time) / 1000.0);
 	}
 	
-	public void initMessageInfo() {
-		msgdat = new TreeMap<String, MessageType>();
-		msgdat.put("0050", new MessageType("0050", 4, new SubMessage[] {new SubMessage("SuPosRL", false, false, 0.012207f, "mm"), new SubMessage("SuPosRR", false, false, 0.0148866f, "mm")}));
-		msgdat.put("0060", new MessageType("0060", 4, new SubMessage[] {new SubMessage("SuPosFR", false, false, 0.012207f, "mm"), new SubMessage("SuPosFL", false, false, 0.012207f, "mm")}));
-		msgdat.put("0070", new MessageType("0070", 8, new SubMessage[] {new SubMessage("YawRate", true, false, 0.005f, "dg/s"), new SubMessage("Reserved", true, false, 1, ""), new SubMessage("LatAccl", true, false, 0.0001274f, "g"), new SubMessage("Unused", true, false, 1, "")}));
-		msgdat.put("0080", new MessageType("0080", 8, new SubMessage[] {new SubMessage("YawAccl", true, false, 0.0125f, "d/s2"), new SubMessage("Reserved", true, false, 1, ""), new SubMessage("LngAccl", true, false, 0.0001274f, "g"), new SubMessage("Unused", true, false, 1, "")}));
-		msgdat.put("0100", new MessageType("0100", 0, new SubMessage[] {}));
-		msgdat.put("0110", new MessageType("0110", 6, new SubMessage[] {new SubMessage("BrkPrs1", false, false, 0.7629395f, "psi"), new SubMessage("BrkPrs0", false, false, 0.7629395f, "psi"), new SubMessage("SterAng", false, false, 0.0878906f, "deg"), new SubMessage("Unused", true, false, 1, "")}));
-		msgdat.put("0200", new MessageType("0200", 8, new SubMessage[] {new SubMessage("RPM", true, true, 1, "rpm"), new SubMessage("ThrtPos", true, true, 0.1f, "%"), new SubMessage("OilPres", true, true, 0.1f, "psi"), new SubMessage("OilTemp", true, true, 0.1f, "C")}));
-		msgdat.put("0201", new MessageType("0201", 8, new SubMessage[] {new SubMessage("EngTemp", true, true, 0.1f, "C"), new SubMessage("Lambda", true, true, 0.001f, "La"), new SubMessage("ManPres", true, true, 0.1f, "kPa"), new SubMessage("BatVolt", true, true, 0.01f, "V")}));
-		msgdat.put("0202", new MessageType("0202", 8, new SubMessage[] {new SubMessage("WlSpdFL", true, true, 0.1f, "MPH"), new SubMessage("WlSpdFR", true, true, 0.1f, "MPH"), new SubMessage("WlSpdRR", true, true, 0.1f, "MPH"), new SubMessage("WlSpdRL", true, true, 0.1f, "MPH")}));
-		msgdat.put("0203", new MessageType("0203", 2, new SubMessage[] {new SubMessage("GrndSpd", true, true, 0.1f, "MPH"), new SubMessage("Unused", true, true, 0.1f, "")}));
+	public boolean initMessageInfo() {
+		File configFile = new File(new File("").getAbsolutePath() + "/config.txt");
+		if(configFile == null || !configFile.canRead() || !configFile.exists() || configFile.isDirectory() || !configFile.isFile()) {
+			display.error("Config File Error","The config file cannot be read or found.\n\nPlease place it in the same directory as the program and restart the program.");
+			return false;
+		}
+		
+		Scanner reader;
+		try {
+			reader = new Scanner(configFile);
+		} catch (FileNotFoundException e) {
+			display.error("Config File Error","The config file cannot be read or found.\n\nPlease place it in the same directory as the program and restart the program.");
+			return false;
+		}
+		
+		messageData = new TreeMap<String, MessageType>();
+		
+		while(reader.hasNextLine()) {
+			String temp = reader.nextLine();
+			if(!temp.substring(0, 2).equals("//")) {
+				String[] data = temp.split(",");
+				
+				String msgId = data[0];
+				int len = Integer.parseInt(data[1]);
+				SubMessage[] subMessages = new SubMessage[len/2];
+				for(int i=0;i<len/2;i++) {
+					subMessages[i] = new SubMessage(data[2 + 5 * i], Boolean.parseBoolean(data[3 + 5 * i]), Boolean.parseBoolean(data[4 + 5 * i]), Float.parseFloat(data[5 + 5 * i]), data[6 + 5 * i]);
+				}
+				messageData.put(msgId, new MessageType(msgId, len, subMessages));
+			}
+		}
+		reader.close();
+		return true;
 	}
 	
 	private ArrayList<String> prepareAxis() {
@@ -63,7 +86,7 @@ public class Converter {
 		
 		int c = 0;
 		axis.add("Time [s] ");
-		Iterator<Entry<String, MessageType>> it = msgdat.entrySet().iterator();
+		Iterator<Entry<String, MessageType>> it = messageData.entrySet().iterator();
 		while(it.hasNext()) {
 			Entry<String, MessageType> message = it.next();
 			SubMessage[] messages = message.getValue().getSubMessages();
@@ -111,14 +134,14 @@ public class Converter {
 				if(temp > this.convertProgress) setProgress(0,temp);
 				
 				String msgId = hex(data[i+1]) + hex(data[i]);
-				if(msgdat.containsKey(msgId)) {
-					int len = msgdat.get(msgId).getLength();
+				if(messageData.containsKey(msgId)) {
+					int len = messageData.get(msgId).getLength();
 					byte[] msgBytes = new byte[len];
 					byte[] timeBytes = new byte[] {data[i + len + 2], data[i + len + 3], data[i + len + 4], data[i + len + 5]};
 					for(int j=0; j<len;j++) {
 						msgBytes[j] = data[j+i+2];
 					}
-					values.add(msgdat.get(msgId).translateData(msgBytes, timeBytes, this.axis.size()));						
+					values.add(messageData.get(msgId).translateData(msgBytes, timeBytes, this.axis.size()));						
 					i = i + len + 6;
 				} 
 				else {
@@ -178,7 +201,8 @@ public class Converter {
 			bw.write("\n");
 			
 			for(int i=0;i<values.size();i++) {
-				for(int j=0;j<values.get(i).length;j++) {
+				bw.write(values.get(i)[0] + " ");
+				for(int j=1;j<values.get(i).length;j++) {
 					bw.write(round(values.get(i)[j]) + " ");
 				}
 				
