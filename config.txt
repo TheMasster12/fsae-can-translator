@@ -1,11 +1,24 @@
-//Test comment
+//FSAE-CAN-Translator Config File
+//
+//Format: MessageID,MessageLength,title,isSignedInt,isBigEndian,scalar,units (continues on for more sub-messages)
+//
+//All values must be separated by commas.
+//All values must be specified or else the program won't read the config file correctly.
+//Booleans can be either 'false' or 'true', floats must have the format '0.xxxxf'.
+//Sub-Message titles cannot be less than or equal to 7 characters in length (Darab Limitation).
+//Sub-Message units must be less than or equal to 4 characters in length (Darab Limitation).
+//If the message length is X, then there must be X/2 sub-messages. For example, a message length of 4 will have 2, 8 will have 4, etc.
+//Separate each message with a newline
+//Comments must begin with a '//'
+//If the config file is not properly read by the program, it will give an error and exit and you will need to double-check the formatting.
+//
 0050,4,SuPosRL,false,false,0.012207f,mm,SuPosRR,false,false,0.0148866f,mm
 0060,4,SuPosFR,false,false,0.012207f,mm,SuPosFL,false,false,0.012207f,mm
-0070,8,YawRate,true,false,0.005f,dg/s,Reserved,true,false,1,N/A,LatAccl,true,false,0.0001274f,g,Unused,true,false,1,N/A
-0080,8,YawAccl,true,false,0.0125f,d/s2,Reserved,true,false,1,N/A,LngAccl,true,false,0.0001274f,g,Unused,true,false,1,N/A
+0070,8,YawRate,true,false,0.005f,dg/s,Rsrvd,true,false,1,N/A,LatAccl,true,false,0.0001274f,g,Unused,true,false,1,N/A
+0080,8,YawAccl,true,false,0.0125f,d/s2,Rsrvd,true,false,1,N/A,LngAccl,true,false,0.0001274f,g,Unused,true,false,1,N/A
 0100,0
-0110,6,BrkPrs1,false,false,0.7629395f,psi,BrkPrs0,false,false,0.7629395f,psi,SterAng,false,false,0.0878906f,deg,Unused,true,false,1,N/A
+0110,6,BrkPrs1,false,false,0.7629395f,psi,BrkPrs0,false,false,0.7629395f,psi,SterAng,false,false,0.0878906f,deg
 0200,8,RPM,true,true,1,rpm,ThrtPos,true,true,0.1f,%,OilPres,true,true,0.1f,psi,OilTemp,true,true,0.1f,C
 0201,8,EngTemp,true,true,0.1f,C,Lambda,true,true,0.001f,La,ManPres,true,true,0.1f,kPa,BatVolt,true,true,0.01f,V
 0202,8,WlSpdFL,true,true,0.1f,MPH,WlSpdFR,true,true,0.1f,MPH,WlSpdRR,true,true,0.1f,MPH,WlSpdRL,true,true,0.1f,MPH
-0203,2,GrndSpd,true,true,0.1f,MPH,Unused,true,true,0.1f,N/A
+0203,2,GrndSpd,true,true,0.1f,MPH

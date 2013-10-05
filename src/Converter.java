@@ -72,7 +72,37 @@ public class Converter {
 				int len = Integer.parseInt(data[1]);
 				SubMessage[] subMessages = new SubMessage[len/2];
 				for(int i=0;i<len/2;i++) {
-					subMessages[i] = new SubMessage(data[2 + 5 * i], Boolean.parseBoolean(data[3 + 5 * i]), Boolean.parseBoolean(data[4 + 5 * i]), Float.parseFloat(data[5 + 5 * i]), data[6 + 5 * i]);
+					if(data.length != (2 + 5 * (len / 2))) {
+						display.error("Config Parsing Error", "Invalid length. Missing sub-messages or there is missing values from a sub-message.");
+						reader.close();
+						return false;
+					}
+					
+					if(data[2 + 5 * i].length() > 7) {
+						display.error("Config Parsing Error", "The length of a sub-message title must be less than or equal to 7 characters.");
+						reader.close();
+						return false;
+					}
+					
+					if(data[6 + 5 * i].length() > 4) {
+						display.error("Config Parsing Error", "The length of a sub-message unit must be less than or equal to 4 characters.");
+						reader.close();
+						return false;
+					}
+					
+					if(!(data[3 + 5 * i].equals("false") || data[3 + 5 * i].equals("true")) || !(data[4 + 5 * i].equals("false") || data[4 + 5 * i].equals("true"))) {
+						display.error("Config Parsing Error", "Booleans must have a value of 'true' or 'false'");
+						reader.close();
+						return false;
+					}
+					
+					try {
+						subMessages[i] = new SubMessage(data[2 + 5 * i], Boolean.parseBoolean(data[3 + 5 * i]), Boolean.parseBoolean(data[4 + 5 * i]), Float.parseFloat(data[5 + 5 * i]), data[6 + 5 * i]);
+					} catch(Exception e) {
+						display.error("Config Parsing Error", "Parsing Error: " + e.getMessage());
+						reader.close();
+						return false;
+					}
 				}
 				messageData.put(msgId, new MessageType(msgId, len, subMessages));
 			}
@@ -91,7 +121,7 @@ public class Converter {
 			Entry<String, MessageType> message = it.next();
 			SubMessage[] messages = message.getValue().getSubMessages();
 			for(int i=0;i<messages.length;i++) {
-				if(!(messages[i].getTitle().equals("Reserved") || messages[i].getTitle().equals("Unused"))) {
+				if(!(messages[i].getTitle().equals("Rsrvd") || messages[i].getTitle().equals("Unused"))) {
 					c++;
 					message.getValue().getSubMessages()[i].setColumnIndex(c);
 					axis.add(messages[i].getTitle() + " [" + messages[i].getUnits() + "] ");

@@ -20,7 +20,7 @@ public class MessageType {
 		values[0] = timestamp;
 		
 		for(int i=0;i<messageLength/2;i++) {
-			if(!(messageData[i].getTitle().equals("Reserved") || messageData[i].getTitle().equals("Unused"))) {
+			if(!(messageData[i].getTitle().equals("Rsrvd") || messageData[i].getTitle().equals("Unused"))) {
 				values[messageData[i].getColumnIndex()] = messageData[i].getValue(data[2*i], data[(2*i)+1]);
 			}
 		}
