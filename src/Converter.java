@@ -72,32 +72,32 @@ public class Converter {
 				int len = Integer.parseInt(data[1]);
 				SubMessage[] subMessages = new SubMessage[len/2];
 				for(int i=0;i<len/2;i++) {
-					if(data.length != (2 + 5 * (len / 2))) {
+					if(data.length != (2 + 6 * (len / 2))) {
 						display.error("Config Parsing Error", "Invalid length. Missing sub-messages or there is missing values from a sub-message.");
 						reader.close();
 						return false;
 					}
 					
-					if(data[2 + 5 * i].length() > 7) {
+					if(data[2 + 6 * i].length() > 7) {
 						display.error("Config Parsing Error", "The length of a sub-message title must be less than or equal to 7 characters.");
 						reader.close();
 						return false;
 					}
 					
-					if(data[6 + 5 * i].length() > 4) {
+					if(data[7 + 6 * i].length() > 4) {
 						display.error("Config Parsing Error", "The length of a sub-message unit must be less than or equal to 4 characters.");
 						reader.close();
 						return false;
 					}
 					
-					if(!(data[3 + 5 * i].equals("false") || data[3 + 5 * i].equals("true")) || !(data[4 + 5 * i].equals("false") || data[4 + 5 * i].equals("true"))) {
+					if(!(data[3 + 6 * i].equals("false") || data[3 + 6 * i].equals("true")) || !(data[4 + 6 * i].equals("false") || data[4 + 6 * i].equals("true"))) {
 						display.error("Config Parsing Error", "Booleans must have a value of 'true' or 'false'");
 						reader.close();
 						return false;
 					}
 					
 					try {
-						subMessages[i] = new SubMessage(data[2 + 5 * i], Boolean.parseBoolean(data[3 + 5 * i]), Boolean.parseBoolean(data[4 + 5 * i]), Float.parseFloat(data[5 + 5 * i]), data[6 + 5 * i]);
+						subMessages[i] = new SubMessage(data[2 + 6 * i], Boolean.parseBoolean(data[3 + 6 * i]), Boolean.parseBoolean(data[4 + 6 * i]), Float.parseFloat(data[5 + 6 * i]), Float.parseFloat(data[6 + 6 * i]), data[7 + 6 * i]);
 					} catch(Exception e) {
 						display.error("Config Parsing Error", "Parsing Error: " + e.getMessage());
 						reader.close();
