@@ -1,4 +1,4 @@
-fsae-data-converter
+fsae-can-translator
 ===================
 
 Java program that takes raw output data from a CAN bus and outputs it in a format that can be imported by WinDarab
