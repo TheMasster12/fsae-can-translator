@@ -16,7 +16,7 @@ public class Converter {
 	private File inputFile;
 	private File outputFile;
 	
-	private Map<String, MessageType> messageData;
+	private Map<String, Message> messageData;
 	private ArrayList<float[]> values;
 	private ArrayList<String> axis;
 	
@@ -61,7 +61,7 @@ public class Converter {
 			return false;
 		}
 		
-		messageData = new TreeMap<String, MessageType>();
+		messageData = new TreeMap<String, Message>();
 		
 		while(reader.hasNextLine()) {
 			String temp = reader.nextLine();
@@ -104,7 +104,7 @@ public class Converter {
 						return false;
 					}
 				}
-				messageData.put(msgId, new MessageType(msgId, len, subMessages));
+				messageData.put(msgId, new Message(msgId, len, subMessages));
 			}
 		}
 		reader.close();
@@ -116,9 +116,9 @@ public class Converter {
 		
 		int c = 0;
 		axis.add("Time [s] ");
-		Iterator<Entry<String, MessageType>> it = messageData.entrySet().iterator();
+		Iterator<Entry<String, Message>> it = messageData.entrySet().iterator();
 		while(it.hasNext()) {
-			Entry<String, MessageType> message = it.next();
+			Entry<String, Message> message = it.next();
 			SubMessage[] messages = message.getValue().getSubMessages();
 			for(int i=0;i<messages.length;i++) {
 				if(!(messages[i].getTitle().equals("Rsrvd") || messages[i].getTitle().equals("Unused"))) {

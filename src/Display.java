@@ -20,25 +20,23 @@ import javax.swing.JProgressBar;
  * and the finished conversion.
  * 
  * @author Andrew Mass
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class Display extends JFrame {
 
-  // Auto-generated serialization Id.
+  /**
+   * Auto-generated serialization Id.
+   */
   private static final long serialVersionUID = 3366543860445759856L;
 
-  // Instance variable for Converter class.
   private Converter converter;
 
-  // Main graphical JPanel for GUI.
   private JPanel mainPanel;
 
-  // Graphical JLabel's for GUI.
   private JLabel inputTextField;
   private JLabel outputTextField;
   private JLabel timeElapsedField;
 
-  // Graphical JProgressBar's for GUI.
   private JProgressBar convertProgressBar;
   private JProgressBar normalizeProgressBar;
   private JProgressBar outputProgressBar;
@@ -47,8 +45,8 @@ public class Display extends JFrame {
    * Main constructor for Display class. Builds GUI from Java components. Sets click listeners for
    * all buttons.
    * 
-   * @param parent
-   *          The instance of the Converter class that generated this instance of the Display class.
+   * @param parent The instance of the Converter class that generated this instance of the Display
+   *          class.
    */
   public Display(Converter parent) {
     this.converter = parent;
@@ -57,9 +55,11 @@ public class Display extends JFrame {
     mainPanel = new JPanel();
     mainPanel.setLayout(new GridBagLayout());
 
-    // This instance of GridBagConstraints sets the width, height, position, and more values for the
-    // component that we are currently placing into the grid. Values that do not change for
-    // inserting the next component do not need to be reset.
+    /*
+     * This instance of GridBagConstraints sets the width, height, position, and more values for the
+     * component that we are currently placing into the grid. Values that do not change for
+     * inserting the next component do not need to be reset.
+     */
     GridBagConstraints c = new GridBagConstraints();
     c.gridx = 0;
     c.gridy = 0;
@@ -76,8 +76,10 @@ public class Display extends JFrame {
     c.gridy = 1;
     mainPanel.add(outputTextField, c);
 
-    // Sets listener for the inputButton. When clicked, it shows the input chooser pop-up.
-    // Changes constraints and adds the inputButton to the grid.
+    /*
+     * Sets listener for the inputButton. When clicked, it shows the input chooser pop-up. Changes
+     * constraints and adds the inputButton to the grid.
+     */
     JButton inputButton = new JButton("Select File to Convert");
     inputButton.addActionListener(new ActionListener() {
       @Override
@@ -90,8 +92,10 @@ public class Display extends JFrame {
     c.weightx = 1;
     mainPanel.add(inputButton, c);
 
-    // Sets listener for the outputButton When clicked, it shows the output chooser pop-up.
-    // Changes constraints and adds the outputButton to the grid.
+    /*
+     * Sets listener for the outputButton When clicked, it shows the output chooser pop-up. Changes
+     * constraints and adds the outputButton to the grid.
+     */
     JButton outputButton = new JButton("Select File to Output");
     outputButton.addActionListener(new ActionListener() {
       @Override
@@ -103,8 +107,10 @@ public class Display extends JFrame {
     c.gridx = 1;
     mainPanel.add(outputButton, c);
 
-    // Instantiates the convertProgressBar, sets it's colors, changes the constraints, and adds it
-    // to the grid.
+    /*
+     * Instantiates the convertProgressBar, sets it's colors, changes the constraints, and adds it
+     * to the grid.
+     */
     convertProgressBar = new JProgressBar();
     convertProgressBar.setBackground(Color.red);
     convertProgressBar.setForeground(Color.green);
@@ -113,26 +119,31 @@ public class Display extends JFrame {
     c.gridy = 3;
     mainPanel.add(convertProgressBar, c);
 
-    // Instantiates the normalizeProgressBar, sets it's colors, changes the constraints, and adds it
-    // to the grid.
+    /*
+     * Instantiates the normalizeProgressBar, sets it's colors, changes the constraints, and adds it
+     * to the grid.
+     */
     normalizeProgressBar = new JProgressBar();
     normalizeProgressBar.setBackground(Color.red);
     normalizeProgressBar.setForeground(Color.green);
     c.gridy = 4;
     mainPanel.add(normalizeProgressBar, c);
 
-    // Instantiates the outputProgressBar, sets it's colors, changes the constraints, and adds it
-    // to the grid.
+    /*
+     * Instantiates the outputProgressBar, sets it's colors, changes the constraints, and adds it to
+     * the grid.
+     */
     outputProgressBar = new JProgressBar();
     outputProgressBar.setBackground(Color.red);
     outputProgressBar.setForeground(Color.green);
     c.gridy = 5;
     mainPanel.add(outputProgressBar, c);
 
-    // Sets listener for the convertButton. When clicked, it will first reset the display to the
-    // initial state (in case the user runs the conversion more than once), and then start the
-    // RunThread (See RunThread class).
-    // Changes constraints and adds the convertButton to the grid.
+    /*
+     * Sets listener for the convertButton. When clicked, it will first reset the display to the
+     * initial state (in case the user runs the conversion more than once), and then start the
+     * RunThread (See RunThread class). Changes constraints and adds the convertButton to the grid.
+     */
     JButton convertButton = new JButton("Convert Selected File");
     convertButton.addActionListener(new ActionListener() {
       @Override
@@ -207,10 +218,8 @@ public class Display extends JFrame {
   /**
    * Sets a specific progress bar to the specified progress value.
    * 
-   * @param which
-   *          Integer Id of which progress bar to change the value of.
-   * @param progress
-   *          The value to which the selected progress bar should be set to.
+   * @param which Integer Id of which progress bar to change the value of.
+   * @param progress The value to which the selected progress bar should be set to.
    */
   public void setProgress(int which, int progress) {
     switch(which) {
@@ -229,10 +238,8 @@ public class Display extends JFrame {
   /**
    * Helper function which displays an error message using the standard JOptionPane class.
    * 
-   * @param title
-   *          The title to display for the error message.
-   * @param message
-   *          The description of the error to display for the error message.
+   * @param title The title to display for the error message.
+   * @param message The description of the error to display for the error message.
    */
   public void error(String title, String message) {
     JOptionPane.showMessageDialog(mainPanel, message, title, JOptionPane.ERROR_MESSAGE);
@@ -242,8 +249,7 @@ public class Display extends JFrame {
    * Sets the value of the timeElapsedField JLabel to inform the user of how long the conversion
    * took.
    * 
-   * @param time
-   *          The time that the application took to convert the input file.
+   * @param time The time that the application took to convert the input file.
    */
   public void showTimeElapsed(double time) {
     timeElapsedField.setText("Time Elapsed: " + time + "s");
