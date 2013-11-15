@@ -20,7 +20,7 @@ import javax.swing.JProgressBar;
  * and the finished translation.
  * 
  * @author Andrew Mass
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class Display extends JFrame {
 
