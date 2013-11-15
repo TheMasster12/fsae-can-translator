@@ -2,7 +2,7 @@
  * A model class which represents a type of CAN message.
  * 
  * @author Andrew Mass
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class Message {
 
@@ -65,7 +65,7 @@ public class Message {
       values[i] = Float.MAX_VALUE;
     }
 
-    values[0] = timestamp;
+    values[0] = round(timestamp);
 
     /*
      * Iterates through all this message's SubMessages and has them translate the data sent over the
@@ -74,11 +74,33 @@ public class Message {
      */
     for(int i = 0; i < messageLength / 2; i++) {
       if(!(messageData[i].getTitle().equals("Rsrvd") || messageData[i].getTitle().equals("Unused"))) {
-        values[messageData[i].getColumnIndex()] = messageData[i].getValue(data[2 * i],
-            data[(2 * i) + 1]);
+        float translatedValue = messageData[i].getValue(data[2 * i], data[(2 * i) + 1]);
+        values[messageData[i].getColumnIndex()] = (translatedValue == 0.0f) ? translatedValue
+            : round(translatedValue);
       }
     }
     return values;
+  }
+
+  /**
+   * Formats the number to a specific number of significant figures
+   * 
+   * @param num The number to format
+   * @return A formatted string representation of the number.
+   */
+  private float round(float num) {
+    final int SIG_FIGS = 6;
+
+    if(num == 0.0f) {
+      return 0.0f;
+    }
+
+    final double d = Math.ceil(Math.log10(num < 0 ? -num : num));
+    final int power = SIG_FIGS - (int) d;
+
+    final double magnitude = Math.pow(10, power);
+    final long shifted = Math.round(num * magnitude);
+    return Float.parseFloat("" + shifted / magnitude);
   }
 
   /**
