@@ -66,6 +66,7 @@ public class Message {
     }
 
     values[0] = round(timestamp);
+    values[1] = ((timestamp) % 100) == 0 ? 1.0f : 0.0f;
 
     /*
      * Iterates through all this message's SubMessages and has them translate the data sent over the
