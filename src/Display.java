@@ -20,7 +20,7 @@ import javax.swing.JProgressBar;
  * and the finished translation.
  * 
  * @author Andrew Mass
- * @version 1.0.2
+ * @version 1.0.3
  */
 public class Display extends JFrame {
 
@@ -166,7 +166,7 @@ public class Display extends JFrame {
 
     // Sets some default behavior for the GUI window.
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.setSize(750, 170);
+    this.setSize(750, 200);
     this.setTitle("FSAE CAN Translator - Illini Motorsports - Andrew Mass");
   }
 

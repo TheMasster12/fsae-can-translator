@@ -2,7 +2,7 @@
  * A model class which represents a type of CAN message.
  * 
  * @author Andrew Mass
- * @version 1.0.2
+ * @version 1.0.3
  */
 public class Message {
 
@@ -66,7 +66,11 @@ public class Message {
     }
 
     values[0] = round(timestamp);
-    values[1] = ((timestamp) % 100) == 0 ? 1.0f : 0.0f;
+    
+    /*
+     * This is temporary until the physical laptrigger is working and we can get actual lap data.
+     */
+    values[1] = (Math.abs((timestamp % 100)) <= 0.01f) ? 1.0f : 0.0f;
 
     /*
      * Iterates through all this message's SubMessages and has them translate the data sent over the

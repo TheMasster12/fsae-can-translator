@@ -15,7 +15,7 @@ import java.util.Scanner;
  * Class which handles the implementation of the translation.
  * 
  * @author Andrew Mass
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class Translator {
 
@@ -180,16 +180,16 @@ public class Translator {
    */
   private ArrayList<String> prepareAxis() {
     ArrayList<String> axis = new ArrayList<String>();
-    
+
     axis.add("xtime [s] ");
     int lastColumnUsed = 0;
 
     axis.add("laptrig ");
     lastColumnUsed++;
-    
+
     axis.add("xdist [m] ");
     lastColumnUsed++;
-    
+
     Iterator<Entry<String, Message>> iterator = messageData.entrySet().iterator();
     while(iterator.hasNext()) {
       Entry<String, Message> message = iterator.next();
@@ -300,28 +300,33 @@ public class Translator {
     setProgress(0, 100);
     return true;
   }
-  
+
+  /**
+   * Iterates through all the messages which include ground speed and integrates the displacement
+   * over the time differential to obtain a total distance traveled.
+   */
   private void generateDistance() {
+
+    // This gets the column index for the ground speed subMessage.
     int groundSpeedIndex = messageData.get("0203").getSubMessages()[0].getColumnIndex();
+
     for(int i = 0; i < values.size(); i++) {
       if(values.get(i)[groundSpeedIndex] != Float.MAX_VALUE) {
-        int j = i-1;
-        //At ground speed reading, need to travel backwards to get to previous ground speed.
-        while(values.get(j)[groundSpeedIndex] == Float.MAX_VALUE) {
+        int j = i - 1;
+        while(j > 0 && values.get(j)[groundSpeedIndex] == Float.MAX_VALUE) {
           j--;
-          if(j <= 0 ) break;
         }
+
         if(j > 0) {
-          //System.out.println(values.get(i)[groundSpeedIndex] + " - " + values.get(j)[groundSpeedIndex]);
           float average = (values.get(i)[groundSpeedIndex] + values.get(j)[groundSpeedIndex]) / 2.0f;
           float timediff = values.get(i)[0] - values.get(j)[0];
-          float displacement = average * timediff * 0.44704f;
-          //System.out.println("Av: " + average + " TimeDiff: " + timediff + " Displacement: " + displacement);
-          values.get(i)[2] = displacement;
+
+          // Converts from miles per hour seconds to meters.
+          values.get(i)[2] = average * timediff * 0.44704f;;
         }
       }
     }
-    
+
     float totalDistance = 0;
     for(int i = 0; i < values.size(); i++) {
       if(values.get(i)[2] != Float.MAX_VALUE) {
