@@ -12,13 +12,15 @@
 //Comments must begin with a '//'
 //If the config file is not properly read by the program, it will give an error and exit and you will need to double-check the formatting.
 //
-0050,4,SuPosRL,false,false,0.012207f,0.0f,mm,SuPosRR,false,false,0.0148866f,0.0f,mm
-0060,4,SuPosFR,false,false,0.012207f,0.0f,mm,SuPosFL,false,false,0.012207f,0.0f,mm
 0070,8,YawRate,true,false,0.005f,32768.0f,dg/s,Rsrvd,true,false,1,0.0f,N/A,LatAccl,true,false,0.0001274f,32768.0f,g,Unused,true,false,1,0.0f,N/A
 0080,8,YawAccl,true,false,0.0125f,32768.0f,d/s2,Rsrvd,true,false,1,0.0f,N/A,LngAccl,true,false,0.0001274f,32768.0f,g,Unused,true,false,1,0.0f,N/A
-0100,0
-0110,6,BrkPrs1,false,false,0.7629395f,409.6f,psi,BrkPrs0,false,false,0.7629395f,409.6f,psi,SterAng,false,false,0.0878906f,0.0f,deg
-0200,8,RPM,true,true,1,0.0f,rpm,ThrtPos,true,true,0.1f,0.0f,%,OilPres,true,true,0.1f,0.0f,psi,OilTemp,true,true,0.1f,0.0f,C
+0200,8,RPM,true,true,1,0.0f,RPM,ThrtPos,true,true,0.1f,0.0f,%,OilPres,true,true,0.1f,0.0f,psi,OilTemp,true,true,0.1f,0.0f,C
 0201,8,EngTemp,true,true,0.1f,0.0f,C,Lambda,true,true,0.001f,0.0f,La,ManPres,true,true,0.1f,0.0f,kPa,BatVolt,true,true,0.01f,0.0f,V
 0202,8,WlSpdFL,true,true,0.1f,0.0f,MPH,WlSpdFR,true,true,0.1f,0.0f,MPH,WlSpdRR,true,true,0.1f,0.0f,MPH,WlSpdRL,true,true,0.1f,0.0f,MPH
-0203,2,GrndSpd,true,true,0.1f,0.0f,MPH
+0203,8,LatHW,true,true,0.0000001f,0.0f,Deg,LatLW,true,true,0.0000001f,0.0f,Deg,LongHW,true,true,0.0000001f,0.0f,Deg,LongLW,true,true,0.0000001f,0.0f,Deg
+0204,6,GndSpd,false,true,0.1f,0.0f,MPH,GPSSpd,false,true,0.1f,0.0f,MPH,Gear,false,true,0.1f,0.0f,gear
+0300,8,IGN,false,false,0.0001f,0.0f,A,Fuel,false,false,0.0001f,0.0f,A,Water,false,false,0.0001f,0.0f,A,Starter,false,false,0.0001f,0.0f,A
+0301,8,Fan,false,false,0.0001f,0.0f,A,PCB,false,false,0.0001f,0.0f,A,Aux,false,false,0.0001f,0.0f,A,ECU,false,false,0.0001f,0.0f,A
+0302,2,Error,false,false,0.0f,0.0f,unit
+0123,8,Fan1,false,false,0.0001f,0.0f,A,PCB1,false,false,0.0001f,0.0f,A,Aux,false,false,0.0001f,0.0f,A,ECU1,false,false,0.0001f,0.0f,A
+//00E5,6,BR2,false,false,0.0f,0.0f,unit,BR2,false,false,0.0f,0.0f,unit,BR2,false,false,0.0f,0.0f,unit
