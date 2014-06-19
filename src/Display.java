@@ -14,10 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 /**
- * Class which controls all the graphical components of the application. Builds a GUI out of Java
- * components, styles all necessary components by setting instance variables, provides access to the
- * controls for the translation, and shows data about the status of a currently running translation
- * and the finished translation.
+ * Class which controls all the graphical components of the application. Builds a GUI out of Java components, styles all
+ * necessary components by setting instance variables, provides access to the controls for the translation, and shows
+ * data about the status of a currently running translation and the finished translation.
  * 
  * @author Andrew Mass
  * @version 1.0.3
@@ -42,8 +41,7 @@ public class Display extends JFrame {
   private JProgressBar outputProgressBar;
 
   /**
-   * Main constructor for Display class. Builds GUI from Java components. Sets click listeners for
-   * all buttons.
+   * Main constructor for Display class. Builds GUI from Java components. Sets click listeners for all buttons.
    * 
    * @param parent The instance of the Translator class that generated this instance of Display.
    */
@@ -55,9 +53,9 @@ public class Display extends JFrame {
     mainPanel.setLayout(new GridBagLayout());
 
     /*
-     * This instance of GridBagConstraints sets the width, height, position, and more values for the
-     * component that we are currently placing into the grid. Values that do not change for
-     * inserting the next component do not need to be reset.
+     * This instance of GridBagConstraints sets the width, height, position, and more values for the component that we
+     * are currently placing into the grid. Values that do not change for inserting the next component do not need to be
+     * reset.
      */
     GridBagConstraints c = new GridBagConstraints();
     c.gridx = 0;
@@ -76,11 +74,12 @@ public class Display extends JFrame {
     mainPanel.add(outputTextField, c);
 
     /*
-     * Sets listener for the inputButton. When clicked, it shows the input chooser pop-up. Changes
-     * constraints and adds the inputButton to the grid.
+     * Sets listener for the inputButton. When clicked, it shows the input chooser pop-up. Changes constraints and adds
+     * the inputButton to the grid.
      */
     JButton inputButton = new JButton("Select File to Translate");
     inputButton.addActionListener(new ActionListener() {
+
       @Override
       public void actionPerformed(ActionEvent e) {
         showInputChooser();
@@ -92,11 +91,12 @@ public class Display extends JFrame {
     mainPanel.add(inputButton, c);
 
     /*
-     * Sets listener for the outputButton When clicked, it shows the output chooser pop-up. Changes
-     * constraints and adds the outputButton to the grid.
+     * Sets listener for the outputButton When clicked, it shows the output chooser pop-up. Changes constraints and adds
+     * the outputButton to the grid.
      */
     JButton outputButton = new JButton("Select File to Output");
     outputButton.addActionListener(new ActionListener() {
+
       @Override
       public void actionPerformed(ActionEvent e) {
         showOutputChooser();
@@ -107,8 +107,7 @@ public class Display extends JFrame {
     mainPanel.add(outputButton, c);
 
     /*
-     * Instantiates the convertProgressBar, sets it's colors, changes the constraints, and adds it
-     * to the grid.
+     * Instantiates the convertProgressBar, sets it's colors, changes the constraints, and adds it to the grid.
      */
     convertProgressBar = new JProgressBar();
     convertProgressBar.setBackground(Color.red);
@@ -119,8 +118,7 @@ public class Display extends JFrame {
     mainPanel.add(convertProgressBar, c);
 
     /*
-     * Instantiates the normalizeProgressBar, sets it's colors, changes the constraints, and adds it
-     * to the grid.
+     * Instantiates the normalizeProgressBar, sets it's colors, changes the constraints, and adds it to the grid.
      */
     normalizeProgressBar = new JProgressBar();
     normalizeProgressBar.setBackground(Color.red);
@@ -129,8 +127,7 @@ public class Display extends JFrame {
     mainPanel.add(normalizeProgressBar, c);
 
     /*
-     * Instantiates the outputProgressBar, sets it's colors, changes the constraints, and adds it to
-     * the grid.
+     * Instantiates the outputProgressBar, sets it's colors, changes the constraints, and adds it to the grid.
      */
     outputProgressBar = new JProgressBar();
     outputProgressBar.setBackground(Color.red);
@@ -139,13 +136,13 @@ public class Display extends JFrame {
     mainPanel.add(outputProgressBar, c);
 
     /*
-     * Sets listener for the translateButton. When clicked, it will first reset the display to the
-     * initial state (in case the user runs the translation more than once), and then start the
-     * RunThread (See RunThread class). Changes constraints and adds the translateButton to the
-     * grid.
+     * Sets listener for the translateButton. When clicked, it will first reset the display to the initial state (in
+     * case the user runs the translation more than once), and then start the RunThread (See RunThread class). Changes
+     * constraints and adds the translateButton to the grid.
      */
     JButton translateButton = new JButton("Translate Selected File");
     translateButton.addActionListener(new ActionListener() {
+
       @Override
       public void actionPerformed(ActionEvent e) {
         resetDisplay();
@@ -171,8 +168,8 @@ public class Display extends JFrame {
   }
 
   /**
-   * Resets the GUI so that the translation can be run again. Sets the progress bars to their
-   * minimum values and clears the time elapsed label.
+   * Resets the GUI so that the translation can be run again. Sets the progress bars to their minimum values and clears
+   * the time elapsed label.
    */
   private void resetDisplay() {
     convertProgressBar.setValue(0);
@@ -182,8 +179,8 @@ public class Display extends JFrame {
   }
 
   /**
-   * Opens a pop-up for the user which allows them to select a file which they would like to use as
-   * the input file for the application.
+   * Opens a pop-up for the user which allows them to select a file which they would like to use as the input file for
+   * the application.
    */
   private void showInputChooser() {
     // Opens the file chooser in the application's running directory
@@ -199,8 +196,8 @@ public class Display extends JFrame {
   }
 
   /**
-   * Opens a pop-up for the user which allows them to select a file which they would like to use as
-   * the output file for the application.
+   * Opens a pop-up for the user which allows them to select a file which they would like to use as the output file for
+   * the application.
    */
   private void showOutputChooser() {
     // Opens the file chooser in the application's running directory
@@ -246,8 +243,7 @@ public class Display extends JFrame {
   }
 
   /**
-   * Sets the value of the timeElapsedField JLabel to inform the user of how long the translation
-   * took.
+   * Sets the value of the timeElapsedField JLabel to inform the user of how long the translation took.
    * 
    * @param time The time that the application took to convert the input file.
    */
@@ -256,9 +252,9 @@ public class Display extends JFrame {
   }
 
   /**
-   * Class which extends the standard Java Thread class. All translation work is done in this thread
-   * so we take the heavy processing off of the main thread. This is generally a good practice, and
-   * it allows the GUI to update while the translation is running.
+   * Class which extends the standard Java Thread class. All translation work is done in this thread so we take the
+   * heavy processing off of the main thread. This is generally a good practice, and it allows the GUI to update while
+   * the translation is running.
    * 
    * @author Andrew Mass
    * @version 1.0.0

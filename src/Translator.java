@@ -19,7 +19,7 @@ import java.util.Scanner;
  */
 public class Translator {
 
-  private Display display;
+  private final Display display;
 
   private File inputFile;
   private File outputFile;
@@ -39,46 +39,41 @@ public class Translator {
   public Translator() {
     display = new Display(this);
     display.setVisible(true);
-    if(!initMessageInfo())
-      System.exit(0);
+    if(!initMessageInfo()) System.exit(0);
   }
 
   /**
-   * Looks for the configuration file. If found, constructs a series of Message objects each with an
-   * array of SubMessage objects. Populates instance variables based on data from the configuration
-   * file.
+   * Looks for the configuration file. If found, constructs a series of Message objects each with an array of SubMessage
+   * objects. Populates instance variables based on data from the configuration file.
    * 
    * @return Whether the initialization was successful or unsuccessful.
    */
   public boolean initMessageInfo() {
     File configFile = new File(new File("").getAbsolutePath() + "/config.txt");
-    if(configFile == null || !configFile.canRead() || !configFile.exists()
-        || configFile.isDirectory() || !configFile.isFile()) {
+    if(configFile == null || !configFile.canRead() || !configFile.exists() || configFile.isDirectory() ||
+        !configFile.isFile()) {
       display
-          .error(
-              "Configuration File Error",
-              "The configuration file cannot be read or found.\n\nPlease place it in the same directory as the program and restart the program.");
+          .error("Configuration File Error",
+                 "The configuration file cannot be read or found.\n\nPlease place it in the same directory as the program and restart the program.");
       return false;
     }
 
     Scanner reader;
     try {
       reader = new Scanner(configFile);
-    }
-    catch(FileNotFoundException e) {
+    } catch(FileNotFoundException e) {
       display
-          .error(
-              "Configuration File Error",
-              "The configuration file cannot be read or found.\n\nPlease place it in the same directory as the program and restart the program.");
+          .error("Configuration File Error",
+                 "The configuration file cannot be read or found.\n\nPlease place it in the same directory as the program and restart the program.");
       return false;
     }
 
     messageData = new HashMap<String, Message>();
 
     /*
-     * This loops through each line of the configuration file and constructs Message objects out of
-     * the information contained in the line. The number of SubMessage definitions in each line of
-     * the the configuration file will determine the number of SubMessage objects in the array.
+     * This loops through each line of the configuration file and constructs Message objects out of the information
+     * contained in the line. The number of SubMessage definitions in each line of the the configuration file will
+     * determine the number of SubMessage objects in the array.
      */
     while(reader.hasNextLine()) {
       String temp = reader.nextLine();
@@ -91,40 +86,38 @@ public class Translator {
         String msgId = data[0];
         int len = Integer.parseInt(data[1]);
 
-        SubMessage[] subMessages = new SubMessage[len / 2];
+        int skip = 2;
+        if(msgId.equals("0203")) {
+          skip = 4;
+        }
 
-        /*
-         * All the indices used below rely on the preconditions of the configuration file. Namely,
-         * the right number of comma separated values must be present and all the values must be in
-         * the exact order as outlined in the configuration file comments.
-         */
-        for(int i = 0; i < len / 2; i++) {
-          if(data.length != (2 + 6 * (len / 2))) {
-            display
-                .error("Configuration Parsing Error",
-                    "Invalid length. Missing sub-messages or there is missing values from a sub-message.");
+        SubMessage[] subMessages = new SubMessage[len / skip];
+
+        for(int i = 0; i < len / skip; i++) {
+          if(data.length != (2 + 6 * (len / skip))) {
+            display.error("Configuration Parsing Error",
+                          "Invalid length. Missing sub-messages or there are missing values from a sub-message.");
             reader.close();
             return false;
           }
 
           if(data[2 + 6 * i].length() > 7) {
             display.error("Configuration Parsing Error",
-                "The length of a sub-message title must be less than or equal to 7 characters.");
+                          "The length of a sub-message title must be less than or equal to 7 characters.");
             reader.close();
             return false;
           }
 
           if(data[7 + 6 * i].length() > 4) {
             display.error("Configuration Parsing Error",
-                "The length of a sub-message unit must be less than or equal to 4 characters.");
+                          "The length of a sub-message unit must be less than or equal to 4 characters.");
             reader.close();
             return false;
           }
 
-          if(!(data[3 + 6 * i].equals("false") || data[3 + 6 * i].equals("true"))
-              || !(data[4 + 6 * i].equals("false") || data[4 + 6 * i].equals("true"))) {
-            display.error("Configuration Parsing Error",
-                "Booleans must have a value of 'true' or 'false'");
+          if(!(data[3 + 6 * i].equals("false") || data[3 + 6 * i].equals("true")) ||
+              !(data[4 + 6 * i].equals("false") || data[4 + 6 * i].equals("true"))) {
+            display.error("Configuration Parsing Error", "Booleans must have a value of 'true' or 'false'");
             reader.close();
             return false;
           }
@@ -133,8 +126,7 @@ public class Translator {
             subMessages[i] = new SubMessage(data[2 + 6 * i], Boolean.parseBoolean(data[3 + 6 * i]),
                 Boolean.parseBoolean(data[4 + 6 * i]), Float.parseFloat(data[5 + 6 * i]),
                 Float.parseFloat(data[6 + 6 * i]), data[7 + 6 * i]);
-          }
-          catch(Exception e) {
+          } catch(Exception e) {
             display.error("Configuration Parsing Error", "Parsing Error: " + e.getMessage());
             reader.close();
             return false;
@@ -150,8 +142,8 @@ public class Translator {
   }
 
   /**
-   * This method is called when the Display signals that the user wants the translation to begin.
-   * Resets all instance variables, then runs the various translation methods in the proper order.
+   * This method is called when the Display signals that the user wants the translation to begin. Resets all instance
+   * variables, then runs the various translation methods in the proper order.
    */
   public void begin() {
     this.convertProgress = 0;
@@ -162,10 +154,8 @@ public class Translator {
 
     this.axis = prepareAxis();
 
-    if(!prepareFiles())
-      return;
-    if(!convert())
-      return;
+    if(!prepareFiles()) return;
+    if(!convert()) return;
     generateDistance();
     normalize();
     outputValues();
@@ -184,9 +174,6 @@ public class Translator {
     axis.add("xtime [s] ");
     int lastColumnUsed = 0;
 
-    axis.add("laptrig ");
-    lastColumnUsed++;
-
     axis.add("xdist [m] ");
     lastColumnUsed++;
 
@@ -198,8 +185,7 @@ public class Translator {
       for(int i = 0; i < subMessages.length; i++) {
 
         // Make sure we don't add Reserved or Unused columns to our data array.
-        if(!(subMessages[i].getTitle().equals("Rsrvd") || subMessages[i].getTitle()
-            .equals("Unused"))) {
+        if(!(subMessages[i].getTitle().equals("Rsrvd") || subMessages[i].getTitle().equals("Unused"))) {
           lastColumnUsed++;
           message.getValue().getSubMessages()[i].setColumnIndex(lastColumnUsed);
           axis.add(subMessages[i].getTitle() + " [" + subMessages[i].getUnits() + "] ");
@@ -215,8 +201,8 @@ public class Translator {
    * @return A boolean representing the success of the checks.
    */
   private boolean prepareFiles() {
-    if(inputFile == null || !inputFile.canRead() || !inputFile.exists() || inputFile.isDirectory()
-        || !inputFile.isFile()) {
+    if(inputFile == null || !inputFile.canRead() || !inputFile.exists() || inputFile.isDirectory() ||
+        !inputFile.isFile()) {
       display.error("Invalid File Error", "Please choose a valid input file.");
       return false;
     }
@@ -229,10 +215,9 @@ public class Translator {
   }
 
   /**
-   * Iterates through each message sent over the CAN bus and converts the raw data into the intended
-   * values. After the completion of this method, the array will contain all values known from the
-   * data, but no interpolation between messages of the same type will be done. So, many values will
-   * still be Float.MAX_VALUE.
+   * Iterates through each message sent over the CAN bus and converts the raw data into the intended values. After the
+   * completion of this method, the array will contain all values known from the data, but no interpolation between
+   * messages of the same type will be done. So, many values will still be Float.MAX_VALUE.
    * 
    * @return A boolean representing the success of the conversion.
    */
@@ -240,8 +225,7 @@ public class Translator {
     byte[] data = null;
     try {
       data = Files.readAllBytes(inputFile.toPath());
-    }
-    catch(IOException e) {
+    } catch(IOException e) {
       display.error("IO Error", "Please try again or try a different file.");
       return false;
     }
@@ -249,25 +233,22 @@ public class Translator {
     this.values = new ArrayList<float[]>();
 
     /*
-     * This iterator points to a byte in the data array. It will be incremented depending on the
-     * number of subMessages in the current message.
+     * This iterator points to a byte in the data array. It will be incremented depending on the number of subMessages
+     * in the current message.
      */
     int i = 0;
     while(true) {
       try {
-        if(i >= data.length)
-          break;
+        if(i >= data.length) break;
 
         int temp = (int) (Math.floor(((i / (float) data.length) * 100.0f)));
-        if(temp > this.convertProgress)
-          setProgress(0, temp);
+        if(temp > this.convertProgress) setProgress(0, temp);
 
         String msgId = hex(data[i + 1]) + hex(data[i]);
         if(messageData.containsKey(msgId)) {
           int len = messageData.get(msgId).getLength();
 
-          byte[] timeBytes = new byte[] {data[i + len + 2], data[i + len + 3], data[i + len + 4],
-              data[i + len + 5]};
+          byte[] timeBytes = new byte[] {data[i + len + 2], data[i + len + 3], data[i + len + 4], data[i + len + 5]};
 
           byte[] msgBytes = new byte[len];
           for(int j = 0; j < len; j++) {
@@ -276,22 +257,20 @@ public class Translator {
 
           values.add(messageData.get(msgId).translateData(msgBytes, timeBytes, this.axis.size()));
           i = i + len + 6;
-        }
-        else {
+        } else {
           /*
-           * If we come to another message in the stream and can't identify it, then we will have to
-           * halt the conversion because the length of the unknown message can't be determined. So,
-           * we don't know where the next valid message starts.
+           * If we come to another message in the stream and can't identify it, then we will have to halt the conversion
+           * because the length of the unknown message can't be determined. So, we don't know where the next valid
+           * message starts.
            */
           display.error("Conversion Error", "Message Code Not Found - " + msgId);
           break;
         }
-      }
-      catch(ArrayIndexOutOfBoundsException e) {
+      } catch(ArrayIndexOutOfBoundsException e) {
         /*
-         * If we've gone past the end of the array, we should end the loop gracefully without
-         * crashing. The only possible negative side-effect of this is losing one CAN message at the
-         * end of the stream, which isn't a problem.
+         * If we've gone past the end of the array, we should end the loop gracefully without crashing. The only
+         * possible negative side-effect of this is losing one CAN message at the end of the stream, which isn't a
+         * problem.
          */
         break;
       }
@@ -302,8 +281,8 @@ public class Translator {
   }
 
   /**
-   * Iterates through all the messages which include ground speed and integrates the displacement
-   * over the time differential to obtain a total distance traveled.
+   * Iterates through all the messages which include ground speed and integrates the displacement over the time
+   * differential to obtain a total distance traveled.
    */
   private void generateDistance() {
 
@@ -337,17 +316,17 @@ public class Translator {
   }
 
   /**
-   * Takes the converted data and interpolates all values so that the data is seamless. This is
-   * necessary because some sensors are sampled much more quickly than others, leaving gaps in the
-   * slowly-sampled data. Darab works by assuming each sensor reports value at every time, so
-   * interpolation is required for the data to display properly without gaps.
+   * Takes the converted data and interpolates all values so that the data is seamless. This is necessary because some
+   * sensors are sampled much more quickly than others, leaving gaps in the slowly-sampled data. Darab works by assuming
+   * each sensor reports value at every time, so interpolation is required for the data to display properly without
+   * gaps.
    */
   private void normalize() {
 
     /*
-     * Searches for the first known sensor value and copies that value from the beginning of the
-     * data array to the point where it was found. Essentially interpolates all the sensors which
-     * haven't been sampled yet to the first sampled value.
+     * Searches for the first known sensor value and copies that value from the beginning of the data array to the point
+     * where it was found. Essentially interpolates all the sensors which haven't been sampled yet to the first sampled
+     * value.
      */
     for(int i = 1; i < values.get(0).length; i++) {
       for(int j = 0; j < values.size(); j++) {
@@ -361,8 +340,8 @@ public class Translator {
     }
 
     /*
-     * Interpolates all values from one sample to the next sensor sample. Will replace all unknown
-     * values (represented temporarily by Float.MAX_VALUE) with interpolated values.
+     * Interpolates all values from one sample to the next sensor sample. Will replace all unknown values (represented
+     * temporarily by Float.MAX_VALUE) with interpolated values.
      */
     for(int i = 1; i < values.get(0).length; i++) {
       int j = 0;
@@ -375,13 +354,12 @@ public class Translator {
         j++;
       }
       int temp = (int) (Math.floor(((i / (float) values.get(0).length) * 100.0f)));
-      if(temp > this.normalizeProgress)
-        setProgress(1, temp);
+      if(temp > this.normalizeProgress) setProgress(1, temp);
     }
 
     /*
-     * If we have any left over Float.MAX_VALUE values, set them to 0.0f instead. This may happen if
-     * a specific sensor is never sampled.
+     * If we have any left over Float.MAX_VALUE values, set them to 0.0f instead. This may happen if a specific sensor
+     * is never sampled.
      */
     for(int i = 0; i < values.get(0).length; i++) {
       for(int j = 0; j < values.size(); j++) {
@@ -415,8 +393,7 @@ public class Translator {
         }
 
         int temp = (int) (Math.floor(((i / (float) values.size()) * 100.0f)));
-        if(temp > this.printProgress)
-          setProgress(2, temp);
+        if(temp > this.printProgress) setProgress(2, temp);
 
         bw.write("\n");
       }
@@ -425,8 +402,7 @@ public class Translator {
       bw.close();
 
       setProgress(2, 100);
-    }
-    catch(IOException e) {
+    } catch(IOException e) {
       display.error("IO Error", "Please try again or try a different file.");
       return;
     }

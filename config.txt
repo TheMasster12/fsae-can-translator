@@ -17,7 +17,7 @@
 0200,8,RPM,true,true,1,0.0f,RPM,ThrtPos,true,true,0.1f,0.0f,%,OilPres,true,true,0.1f,0.0f,psi,OilTemp,true,true,0.1f,0.0f,C
 0201,8,EngTemp,true,true,0.1f,0.0f,C,Lambda,true,true,0.001f,0.0f,La,ManPres,true,true,0.1f,0.0f,kPa,BatVolt,true,true,0.01f,0.0f,V
 0202,8,WlSpdFL,true,true,0.1f,0.0f,MPH,WlSpdFR,true,true,0.1f,0.0f,MPH,WlSpdRR,true,true,0.1f,0.0f,MPH,WlSpdRL,true,true,0.1f,0.0f,MPH
-0203,8,LatHW,true,true,0.0000001f,0.0f,Deg,LatLW,true,true,0.0000001f,0.0f,Deg,LongHW,true,true,0.0000001f,0.0f,Deg,LongLW,true,true,0.0000001f,0.0f,Deg
+0203,8,Lat,true,true,0.0000001f,0.0f,deg,Long,true,true,0.0000001f,0.0f,deg
 0204,6,GndSpd,false,true,0.1f,0.0f,MPH,GPSSpd,false,true,0.1f,0.0f,MPH,Gear,false,true,0.1f,0.0f,gear
 0300,8,IGN,false,false,0.0001f,0.0f,A,Fuel,false,false,0.0001f,0.0f,A,Water,false,false,0.0001f,0.0f,A,Starter,false,false,0.0001f,0.0f,A
 0301,8,Fan,false,false,0.0001f,0.0f,A,PCB,false,false,0.0001f,0.0f,A,Aux,false,false,0.0001f,0.0f,A,ECU,false,false,0.0001f,0.0f,A
