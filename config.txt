@@ -12,8 +12,9 @@
 //Comments must begin with a '//'
 //If the config file is not properly read by the program, it will give an error and exit and you will need to double-check the formatting.
 //
-0050,4,SPotRR,false,false,0.01221f,0.0f,mm,SPotRL,false,false,0.01221f,0.0f,mm
-0060,4,SPotFR,false,false,0.01221f,0.0f,mm,SPotFL,false,false,0.01221f,0.0f,mm
+0050,4,SPotRL,false,false,0.01221f,0.0f,mm,SPotRR,false,false,0.01221f,0.0f,mm
+0060,4,SPotFL,false,false,0.01221f,0.0f,mm,SPotFR,false,false,0.01221f,0.0f,mm
+0110,4,BrkPrsF,false,false,0.7629f,409.6f,psi,BrkPrsR,false,false,0.7629f,409.6f,psi
 0070,8,YawRate,true,false,0.005f,32768.0f,dg/s,Rsrvd,true,false,1,0.0f,N/A,LatAccl,true,false,0.0001274f,32768.0f,g,Unused,true,false,1,0.0f,N/A
 0080,8,YawAccl,true,false,0.0125f,32768.0f,d/s2,Rsrvd,true,false,1,0.0f,N/A,LngAccl,true,false,0.0001274f,32768.0f,g,Unused,true,false,1,0.0f,N/A
 0200,8,RPM,true,true,1,0.0f,RPM,ThrtPos,true,true,0.1f,0.0f,%,OilPres,true,true,0.1f,0.0f,psi,OilTemp,true,true,0.1f,0.0f,C

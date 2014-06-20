@@ -71,7 +71,7 @@ public class Message {
       for(int i = 0; i < messageLength / 4; i++) {
         float translatedValue = messageData[i].getValue(data[4 * i], data[(4 * i) + 1], data[(4 * i) + 2],
                                                         data[(4 * i) + 3]);
-        values[messageData[i].getColumnIndex()] = (translatedValue == 0.0f) ? translatedValue : round(translatedValue);
+        values[messageData[i].getColumnIndex()] = (translatedValue == 0.0f) ? translatedValue : translatedValue;
       }
       return values;
     }
